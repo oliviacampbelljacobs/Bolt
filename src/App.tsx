@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Calculator, TrendingUp, BarChart3, PieChart, FileText, Download } from 'lucide-react';
+import { Calculator, TrendingUp, BarChart3, PieChart, FileText, Download, Upload } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import IncomeStatement from './components/IncomeStatement';
 import BalanceSheet from './components/BalanceSheet';
 import CashFlowStatement from './components/CashFlowStatement';
 import Scenarios from './components/Scenarios';
 import ExportModal from './components/ExportModal';
+import ImportModal from './components/ImportModal';
 import { FinancialData, ScenarioData } from './types/financial';
+import { ImportedData } from './utils/importUtils';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [financialData, setFinancialData] = useState<FinancialData>({
     revenue: Array(5).fill(0),
     cogs: Array(5).fill(0),
@@ -30,6 +33,11 @@ function App() {
     { id: '2', name: 'Optimistic', revenueGrowth: 25, marginImprovement: 5 },
     { id: '3', name: 'Conservative', revenueGrowth: 8, marginImprovement: 0 }
   ]);
+
+  const handleImport = (importedData: ImportedData) => {
+    setFinancialData(importedData.financialData);
+    setScenarios(importedData.scenarios);
+  };
 
   const tabs = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
@@ -66,13 +74,22 @@ function App() {
               <Calculator className="h-8 w-8 text-blue-600 mr-3" />
               <h1 className="text-xl font-semibold text-gray-900">Financial Model Builder</h1>
             </div>
-            <button 
-              onClick={() => setShowExportModal(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export Model
-            </button>
+            <div className="flex space-x-3">
+              <button 
+                onClick={() => setShowImportModal(true)}
+                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </button>
+              <button 
+                onClick={() => setShowExportModal(true)}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -106,6 +123,13 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderActiveComponent()}
       </main>
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImport={handleImport}
+      />
 
       {/* Export Modal */}
       <ExportModal
