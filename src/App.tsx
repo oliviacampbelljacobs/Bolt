@@ -5,10 +5,12 @@ import IncomeStatement from './components/IncomeStatement';
 import BalanceSheet from './components/BalanceSheet';
 import CashFlowStatement from './components/CashFlowStatement';
 import Scenarios from './components/Scenarios';
+import ExportModal from './components/ExportModal';
 import { FinancialData, ScenarioData } from './types/financial';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showExportModal, setShowExportModal] = useState(false);
   const [financialData, setFinancialData] = useState<FinancialData>({
     revenue: Array(5).fill(0),
     cogs: Array(5).fill(0),
@@ -64,7 +66,10 @@ function App() {
               <Calculator className="h-8 w-8 text-blue-600 mr-3" />
               <h1 className="text-xl font-semibold text-gray-900">Financial Model Builder</h1>
             </div>
-            <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={() => setShowExportModal(true)}
+              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               <Download className="h-4 w-4 mr-2" />
               Export Model
             </button>
@@ -101,6 +106,14 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderActiveComponent()}
       </main>
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        financialData={financialData}
+        scenarios={scenarios}
+      />
     </div>
   );
 }
